@@ -1,14 +1,26 @@
+//used to make requests
 const express = require('express');
+//Object Data Modeling (ODM) library for MongoDB
 const mongoose = require('mongoose');
+//middleware to parse cookies attacked to client request objects
 const cookieParser = require('cookie-parser');
+//helps manage configuration variables
 const dotenv= require('dotenv');
+//JSON Web Tokens
 const jwt = require('jsonwebtoken');
+//middleware to enable Cross-Origin Resource Sharing 
+//allows app to handle requests from different origins
 const cors = require('cors');
+//used for hashing and comparing passwords securely
 const bcrypt = require("bcryptjs");
+//WebSocket library, enabling real-time communication between server and clients
+const ws = require('ws');
+//file system module, used to interact with the file system
+const fs = require('fs');
+//both model schemas for MongoDB 
 const User = require('./models/User');
 const Message = require('./models/Message')
-const ws = require('ws');
-const fs = require('fs');
+
 
 dotenv.config();
 mongoose.connect(process.env.MONGO_URL);
@@ -39,10 +51,7 @@ async function getUserDataFromRequest(req) {
     });
 }
 
-app.get('/test',(req, res) => {
-    res.json('test.ok');
-});
-
+//retrieves messages between authenticated user and specified user
 app.get('/messages/:userId', async (req,res) => {
     const {userId} = req.params;
     const userData = await getUserDataFromRequest(req);
@@ -54,11 +63,14 @@ app.get('/messages/:userId', async (req,res) => {
     res.json(messages);
 });
 
+//returns a list of all users with their _id and username
 app.get('/people', async (req, res) => {
     const users = await User.find({}, {'_id':1, username:1})
     res.json(users);
 })
 
+//returns the authenticated user's profile if a valid JWT
+//token is provided in the cookies
 app.get('/profile', (req,res) => {
     const token = req.cookies?.token;
     if (token) {
@@ -71,6 +83,8 @@ app.get('/profile', (req,res) => {
     }
 });
 
+//authenticates a user with 'username' and 'password'
+//if successful, it generates a JWT token and sets it as a cookie
 app.post('/login', async (req,res) => {
     const {username, password} = req.body;
     const foundUser = await User.findOne({username});
@@ -86,10 +100,13 @@ app.post('/login', async (req,res) => {
     }
 });
 
+//logs out the user by clearing the JWT token
 app.post('/logout', (req, res) => {
     res.cookie('token', '', {sameSite:'none', secure:true}).json('ok');
 });
 
+//registers a new user
+//if successful, it generates a JWT token and sets it as a cookie
 app.post('/register', async (req,res) => {
     const {username, password} = req.body;
 
@@ -114,9 +131,11 @@ app.post('/register', async (req,res) => {
 
 const server = app.listen(4000);
 
+//WebSocket server initialization
 const wss = new ws.WebSocketServer({server});
 wss.on('connection', (connection, req) => {
-
+    
+    //iterates over all WebSocket clients and extracts their user IDs and username
     function notifyAboutOnlinePeople() {
         [...wss.clients].forEach(client => {
             client.send(JSON.stringify({
@@ -125,6 +144,8 @@ wss.on('connection', (connection, req) => {
         });
     }
 
+    //every 5 sec a 'ping' is sent and a 'pong' isn't responded within 1 sec,
+    //the connection is terminated and user is removed from the online list
     connection.isAlive = true;
     connection.timer = setInterval(() => {
         connection.ping();
@@ -157,7 +178,9 @@ wss.on('connection', (connection, req) => {
         }
     }
 
-
+    //listens for incoming messages from the client
+    // parses the message data and saves attached files to the server,
+    //and stores the messages in the database
     connection.on('message', async (message) => {
         const messageData = JSON.parse(message.toString());
         const {recipient, text, file} = messageData;
