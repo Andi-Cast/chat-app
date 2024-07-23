@@ -26,11 +26,15 @@ This application allows users to send and recieve messages in real-time. Users c
  
 ## Example Images
 - Login/Register Screen:
-    - <img src="" height="auto" width="75%">
-- Chat Page
-    - <img src="" height="auto" width="75%">
+    - Switching between these two pages is as simple as clicking the 'Register Here' or 'Login Here' under the button.
+    - <img src="https://github.com/Andi-Cast/chat-app/blob/main/example-images/login-form.png" height="auto" width="75%">
+    - <img src="https://github.com/Andi-Cast/chat-app/blob/main/example-images/register-form.png" height="auto" width="75%">
+- Chat Page:
+    - Upon logging in or registering, this page will show up displaying all the users and indicating if they are online or not. 
+    - <img src="https://github.com/Andi-Cast/chat-app/blob/main/example-images/chat-homepage.png" height="auto" width="75%">
 - Messages between users:
-    - <img src="" height="auto" width="75%">
+    - The blue bubbles and gray text bubbles are used to differentiate which messages belong to who. This example also shows how files are send between the users. 
+    - <img src="https://github.com/Andi-Cast/chat-app/blob/main/example-images/chat-conversation.png" height="auto" width="75%">
 
 ## Getting Started
 ### Prerequisites
