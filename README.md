@@ -1,7 +1,7 @@
 # Chat Application
 
 ## Overview
-This chat application is a real-time messaging platform designed for easy and fun communication between users. With this app, you can send and recieve mesesages instantly, see who's online, and share files with your friends.
+This chat application is a real-time messaging platform designed for easy communication between users. With this app, you can send and recieve mesesages instantly, see who's online, and share files with your friends.
 
 ## Application Details
 This application allows users to send and recieve messages in real-time. Users can see who is online, send text messages, and share files wiht other users.
